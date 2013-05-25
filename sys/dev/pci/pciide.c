@@ -7213,8 +7213,8 @@ static __inline__ u_int8_t
 opti_read_config(struct channel_softc *chp, int reg)
 {
 	u_int8_t rv;
-	int s = splhigh();
 
+	crit_enter();
 	/* Two consecutive 16-bit reads from register #1 (0x1f1/0x171) */
 	(void) bus_space_read_2(chp->cmd_iot, chp->cmd_ioh, wdr_features);
 	(void) bus_space_read_2(chp->cmd_iot, chp->cmd_ioh, wdr_features);
@@ -7228,7 +7228,7 @@ opti_read_config(struct channel_softc *chp, int reg)
 	/* Restore the real registers */
 	bus_space_write_1(chp->cmd_iot, chp->cmd_ioh, wdr_seccnt, 0x83u);
 
-	splx(s);
+	crit_leave();
 
 	return (rv);
 }
@@ -7236,7 +7236,7 @@ opti_read_config(struct channel_softc *chp, int reg)
 static __inline__ void
 opti_write_config(struct channel_softc *chp, int reg, u_int8_t val)
 {
-	int s = splhigh();
+	crit_enter();
 
 	/* Two consecutive 16-bit reads from register #1 (0x1f1/0x171) */
 	(void) bus_space_read_2(chp->cmd_iot, chp->cmd_ioh, wdr_features);
@@ -7251,7 +7251,7 @@ opti_write_config(struct channel_softc *chp, int reg, u_int8_t val)
 	/* Restore the real registers */
 	bus_space_write_1(chp->cmd_iot, chp->cmd_ioh, wdr_seccnt, 0x83u);
 
-	splx(s);
+	crit_leave();
 }
 
 void

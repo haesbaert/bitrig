@@ -336,13 +336,7 @@ magma_attach(struct device *parent, struct device *dev, void *aux)
 		return;
 	}
 
-	sc->sc_sih = softintr_establish(IPL_TTY, magma_soft, sc);
-	if (sc->sc_sih == NULL) {
-		printf(": can't get soft intr\n");
-		bus_space_unmap(sc->sc_bustag, sc->sc_iohandle,
-		    sa->sa_reg[0].sbr_size);
-		return;
-	}
+	sc->sc_sih = ithread_softregister(IPL_TTY, magma_soft, sc, 0);
 
 	printf(": %s\n", card->mb_realname);
 
@@ -652,7 +646,7 @@ magma_hard(void *arg)
 	*/
 
 	if (needsoftint)
-		softintr_schedule(sc->sc_sih);
+		ithread_softsched(sc->sc_sih);
 
 	return (serviced);
 }
@@ -672,7 +666,7 @@ magma_soft(void *arg)
 	struct mbpp_softc *mbpp = sc->ms_mbpp;
 	int port;
 	int serviced = 0;
-	int s, flags;
+	int flags;
 
 	/*
 	 * check the tty ports (if any) to see what needs doing
@@ -708,10 +702,10 @@ magma_soft(void *arg)
 				serviced = 1;
 			}
 
-			s = splhigh();	/* block out hard interrupt routine */
+			crit_enter();	/* block out hard interrupt routine */
 			flags = mp->mp_flags;
 			CLR(mp->mp_flags, MTTYF_DONE | MTTYF_CARRIER_CHANGED | MTTYF_RING_OVERFLOW);
-			splx(s);	/* ok */
+			crit_leave();	/* ok */
 
 			if (ISSET(flags, MTTYF_CARRIER_CHANGED)) {
 				dprintf(("%s%x: cd %s\n", mtty->ms_dev.dv_xname, port, mp->mp_carrier ? "on" : "off"));
@@ -743,10 +737,10 @@ magma_soft(void *arg)
 			if (!ISSET(mp->mp_flags, MBPPF_OPEN))
 				continue;
 
-			s = splhigh();	/* block out hard intr routine */
+			crit_enter();	/* block out hard intr routine */
 			flags = mp->mp_flags;
 			CLR(mp->mp_flags, MBPPF_WAKEUP);
-			splx(s);
+			crit_leave();
 
 			if (ISSET(flags, MBPPF_WAKEUP)) {
 				wakeup(mp);

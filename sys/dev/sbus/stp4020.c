@@ -310,21 +310,21 @@ stp4020_event_thread(arg)
 	void *arg;
 {
 	struct stp4020_softc *sc = arg;
-	int s, sense;
+	int sense;
 	unsigned int socket;
 
 	for (;;) {
 		struct stp4020_socket *h;
 
-		s = splhigh();
+		crit_enter();
 		if ((socket = ffs(sc->events)) == 0) {
-			splx(s);
+			crit_leave();
 			(void)tsleep(&sc->events, PWAIT, "stp4020_ev", 0);
 			continue;
 		}
 		socket--;
 		sc->events &= ~(1 << socket);
-		splx(s);
+		crit_leave();
 
 		if (socket >= STP4020_NSOCK) {
 #ifdef DEBUG
@@ -369,11 +369,9 @@ stp4020_queue_event(sc, sock)
 	struct stp4020_softc *sc;
 	int sock;
 {
-	int s;
-
-	s = splhigh();
+	crit_enter();
 	sc->events |= (1 << sock);
-	splx(s);
+	crit_leave();
 	wakeup(&sc->events);
 }
 
@@ -384,15 +382,14 @@ void
 stp4020_intr_dispatch(void *arg)
 {
 	struct stp4020_socket *h = (struct stp4020_socket *)arg;
-	int s;
 
 	/* invoke driver handler */
 	h->intrhandler(h->intrarg);
 
 	/* enable SBUS interrupts for PCMCIA interrupts again */
-	s = splhigh();
+	crit_enter();
 	stp4020_wr_sockctl(h, STP4020_ICR0_IDX, h->int_enable);
-	splx(s);
+	crit_leave();
 }
 
 int
@@ -401,10 +398,9 @@ stp4020_statintr(arg)
 {
 	struct stp4020_softc *sc = arg;
 	int i, sense, r = 0;
-	int s;
 
 	/* protect hardware access against soft interrupts */
-	s = splhigh();
+	crit_enter();
 
 	/*
 	 * Check each socket for pending requests.
@@ -496,7 +492,7 @@ stp4020_statintr(arg)
 			r = 1;
 	}
 
-	splx(s);
+	crit_leave();
 
 	return (r);
 }
@@ -507,10 +503,9 @@ stp4020_iointr(arg)
 {
 	struct stp4020_softc *sc = arg;
 	int i, r = 0;
-	int s;
 
 	/* protect hardware access against soft interrupts */
-	s = splhigh();
+	crit_enter();
 
 	/*
 	 * Check each socket for pending requests.
@@ -538,7 +533,7 @@ stp4020_iointr(arg)
 			}
 			/* Call card handler, if any */
 			if (h->softint != NULL) {
-				softintr_schedule(h->softint);
+				ithread_softsched(h->softint);
 
 				/*
 				 * Disable this sbus interrupt, until the
@@ -551,7 +546,7 @@ stp4020_iointr(arg)
 
 	}
 
-	splx(s);
+	crit_leave();
 
 	return (r);
 }
@@ -859,7 +854,7 @@ stp4020_chip_intr_establish(pch, pf, ipl, handler, arg, xname)
 	 */
 	h->intrhandler = handler;
 	h->intrarg = arg;
-	h->softint = softintr_establish(ipl, stp4020_intr_dispatch, h);
+	h->softint = ithread_softregister(ipl, stp4020_intr_dispatch, h, 0);
 
 	return h->softint != NULL ? h : NULL;
 }
@@ -872,7 +867,7 @@ stp4020_chip_intr_disestablish(pch, ih)
 	struct stp4020_socket *h = (struct stp4020_socket *)pch;
 
 	if (h->softint != NULL) {
-		softintr_disestablish(h->softint);
+		ithread_softderegister(h->softint);
 		h->softint = NULL;
 	}
 	h->intrhandler = NULL;
