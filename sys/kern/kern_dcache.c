@@ -154,8 +154,6 @@ dcache_get(struct dcache *dc, int waitok)
 	struct dcache_pcpu *dp = &dc->dc_pcpu[curcpu()->ci_cpuid];
 	int s;
 
-	dcache_ngets++;
-
 again:
 	s = splhigh();
 
