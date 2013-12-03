@@ -32,7 +32,8 @@ struct dcache_mag {
 };
 
 struct dcache {
-	u_int				dc_maxobjs;
+	u_int				dc_maxmags;
+	u_int				dc_curmags;
 	size_t				dc_objsize;
 	struct mutex			dc_mtx; /* Protects emptymags and fullmags */
 	int				dc_sleeper;
