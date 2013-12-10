@@ -408,6 +408,29 @@ sys_sched_yield(struct proc *p, void *v, register_t *retval)
 	return (0);
 }
 
+int
+sys_sched_setcpu(struct proc *p, void *v, register_t *retval)
+{
+	struct sys_sched_setcpu_args /* {
+		syscallarg(int) cpuid;
+	} */ *uap = v;
+	struct cpu_info *ci;
+	CPU_INFO_ITERATOR cii;
+	int cpuid;
+
+	cpuid = SCARG(uap, cpuid);
+	/* XXX replace for cpu_byid() when we have it */
+	CPU_INFO_FOREACH(cii, ci) {
+		if (ci->ci_cpuid == cpuid)
+			break;
+	}
+	if (ci == NULL)
+		return (ENODEV);
+	sched_peg_curproc(ci);
+
+	return (0);
+}
+
 int thrsleep_unlock(void *, int);
 int
 thrsleep_unlock(void *lock, int lockflags)

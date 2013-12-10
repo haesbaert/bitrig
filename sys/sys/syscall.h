@@ -534,6 +534,9 @@
 				/* 257 is obsolete semctl35 */
 				/* 258 is obsolete shmctl35 */
 				/* 259 is obsolete msgctl35 */
+/* syscall: "sched_setcpu" ret: "int" args: "int" */
+#define	SYS_sched_setcpu	260
+
 /* syscall: "pipe" ret: "int" args: "int *" */
 #define	SYS_pipe	263
 

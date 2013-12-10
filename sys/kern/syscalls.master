@@ -451,7 +451,7 @@
 257	OBSOL		semctl35
 258	OBSOL		shmctl35
 259	OBSOL		msgctl35
-260	UNIMPL
+260	STD NOLOCK	{ int sys_sched_setcpu(int cpuid); }
 261	UNIMPL
 262	UNIMPL
 263	STD		{ int sys_pipe(int *fdp); }

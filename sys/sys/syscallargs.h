@@ -810,6 +810,10 @@ struct sys_msync_args {
 	syscallarg(int) flags;
 };
 
+struct sys_sched_setcpu_args {
+	syscallarg(int) cpuid;
+};
+
 struct sys_pipe_args {
 	syscallarg(int *) fdp;
 };
@@ -1231,6 +1235,7 @@ int	sys_issetugid(struct proc *, void *, register_t *);
 int	sys_lchown(struct proc *, void *, register_t *);
 int	sys_getsid(struct proc *, void *, register_t *);
 int	sys_msync(struct proc *, void *, register_t *);
+int	sys_sched_setcpu(struct proc *, void *, register_t *);
 int	sys_pipe(struct proc *, void *, register_t *);
 int	sys_fhopen(struct proc *, void *, register_t *);
 int	sys_preadv(struct proc *, void *, register_t *);

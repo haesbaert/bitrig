@@ -49,7 +49,7 @@ int
 main(int argc, char *argv[])
 {
 	int niceness = DEFNICE;
-	int c;
+	int c, cpuid = -1;
 
 	setlocale(LC_ALL, "");
 
@@ -60,12 +60,14 @@ main(int argc, char *argv[])
 		argv++;
 	}
 
-	while ((c = getopt (argc, argv, "n:")) != -1) {
+	while ((c = getopt (argc, argv, "n:C:")) != -1) {
 		switch (c) {
 		case 'n':
 			niceness = atoi(optarg);
 			break;
-
+		case 'C':
+			cpuid = atoi(optarg);
+			break;
 		case '?':
 		default:
 			usage();
@@ -85,6 +87,10 @@ main(int argc, char *argv[])
 	}
 	if (setpriority(PRIO_PROCESS, 0, niceness))
 		warn("setpriority");
+	if (cpuid != -1) {
+		if (sched_setcpu(cpuid) != 0)
+			warn("setcpu");
+	}
 
 	execvp(argv[0], &argv[0]);
 	err((errno == ENOENT) ? 127 : 126, "%s", argv[0]);

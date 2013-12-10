@@ -606,8 +606,8 @@ struct sysent sysent[] = {
 	    sys_nosys },			/* 258 = obsolete shmctl35 */
 	{ 0, 0, 0,
 	    sys_nosys },			/* 259 = obsolete msgctl35 */
-	{ 0, 0, 0,
-	    sys_nosys },			/* 260 = unimplemented */
+	{ 1, s(struct sys_sched_setcpu_args), SY_NOLOCK | 0,
+	    sys_sched_setcpu },			/* 260 = sched_setcpu */
 	{ 0, 0, 0,
 	    sys_nosys },			/* 261 = unimplemented */
 	{ 0, 0, 0,

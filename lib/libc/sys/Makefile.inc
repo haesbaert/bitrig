@@ -47,8 +47,8 @@ ASM=	__get_tcb.o __getcwd.o __semctl.o __set_tcb.o __syscall.o \
 	open.o openat.o pathconf.o pipe.o poll.o ppoll.o profil.o pselect.o \
 	quotactl.o read.o readlink.o readlinkat.o readv.o reboot.o \
 	recvfrom.o recvmsg.o rename.o renameat.o revoke.o rmdir.o \
-	sched_yield.o select.o semget.o semop.o sendmsg.o sendto.o \
-	setegid.o seteuid.o setgid.o setgroups.o setitimer.o \
+	sched_setcpu.o sched_yield.o select.o semget.o semop.o sendmsg.o \
+	sendto.o setegid.o seteuid.o setgid.o setgroups.o setitimer.o \
 	setpgid.o setpriority.o setregid.o setresgid.o setresuid.o \
 	setreuid.o setrlimit.o setrtable.o setsid.o setsockopt.o \
 	settimeofday.o setuid.o shmat.o shmctl.o shmdt.o \
