@@ -393,7 +393,7 @@ cpu_attach(struct device *parent, struct device *self, void *aux)
 {
 	struct cpu_softc *sc = (void *) self;
 	struct cpu_attach_args *caa = aux;
-	struct cpu_info *ci;
+	struct cpu_info *ci, *ciaux;
 #if defined(MULTIPROCESSOR)
 	int cpunum = sc->sc_dev.dv_unit;
 	vaddr_t kstack;
@@ -512,8 +512,11 @@ cpu_attach(struct device *parent, struct device *self, void *aux)
 		cpu_start_secondary(ci);
 		ncpus++;
 		if (ci->ci_flags & CPUF_PRESENT) {
-			ci->ci_next = cpu_info_list->ci_next;
-			cpu_info_list->ci_next = ci;
+			for (ciaux = cpu_info_list;
+			     ciaux->ci_next != NULL;
+			     ciaux = ciaux->ci_next)
+				;
+			ciaux->ci_next = ci;
 		}
 #else
 		printf("%s: not started\n", sc->sc_dev.dv_xname);

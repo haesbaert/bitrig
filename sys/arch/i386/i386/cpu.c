@@ -252,7 +252,7 @@ cpu_match(struct device *parent, void *match, void *aux)
 void
 cpu_attach(struct device *parent, struct device *self, void *aux)
 {
-	struct cpu_info *ci = (struct cpu_info *)self;
+	struct cpu_info *ciaux, *ci = (struct cpu_info *)self;
 	struct cpu_attach_args *caa = (struct cpu_attach_args *)aux;
 
 #ifdef MULTIPROCESSOR
@@ -365,8 +365,11 @@ cpu_attach(struct device *parent, struct device *self, void *aux)
 		ci->ci_flags |= CPUF_PRESENT | CPUF_AP;
 		identifycpu(ci);
 		sched_init_cpu(ci);
-		ci->ci_next = cpu_info_list->ci_next;
-		cpu_info_list->ci_next = ci;
+		for (ciaux = cpu_info_list;
+		     ciaux->ci_next != NULL;
+		     ciaux = ciaux->ci_next)
+			;
+		ciaux->ci_next = ci;
 		ncpus++;
 #endif
 		break;
