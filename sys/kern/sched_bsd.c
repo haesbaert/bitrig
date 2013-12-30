@@ -358,6 +358,7 @@ mi_switch(void)
 
 	KERNEL_ASSERT_UNLOCKED();
 	SCHED_ASSERT_LOCKED();
+
 #ifdef MULTIPROCESSOR	
 	/* No recursion on sched_lock while switching. */
 	KASSERT(__mp_lock_held(&sched_lock) == 1);
