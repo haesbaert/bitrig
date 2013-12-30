@@ -144,7 +144,6 @@ sched_idle(void *v)
 	atomic_setbits_int(&p->p_flag, P_CPUPEG);
 	mi_switch();
 	cpuset_del(&sched_idle_cpus, ci);
-	SCHED_UNLOCK();
 
 	KASSERT(ci == curcpu());
 	KASSERT(curproc == spc->spc_idleproc);
@@ -159,7 +158,6 @@ sched_idle(void *v)
 			SCHED_LOCK();
 			p->p_stat = SSLEEP;
 			mi_switch();
-			SCHED_UNLOCK();
 
 			while ((dead = LIST_FIRST(&spc->spc_deadproc))) {
 				LIST_REMOVE(dead, p_hash);
@@ -178,8 +176,8 @@ sched_idle(void *v)
 				SCHED_LOCK();
 				atomic_setbits_int(&spc->spc_schedflags,
 				    spc->spc_whichqs ? 0 : SPCF_HALTED);
-				SCHED_UNLOCK();
 				wakeup(spc);
+				SCHED_UNLOCK();
 			}
 			cpu_idle_cycle();
 		}
@@ -572,7 +570,6 @@ sched_peg_curproc(struct cpu_info *ci)
 	setrunqueue(p);
 	p->p_ru.ru_nvcsw++;
 	mi_switch();
-	SCHED_UNLOCK();
 	KERNEL_RELOCK_ALL(klocks);
 }
 
