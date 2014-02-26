@@ -264,6 +264,7 @@ struct proc {
 	char	p_stat;			/* S* process status. */
 	char	p_pad1[1];
 	u_char	p_descfd;		/* if not 255, fdesc permits this fd */
+	int	p_crit;			/* Critical depth */
 
 	pid_t	p_pid;			/* Process identifier. */
 	LIST_ENTRY(proc) p_hash;	/* Hash chain. */
@@ -277,7 +278,6 @@ struct proc {
 	int	p_sigwait;	/* signal handled by sigwait() */
 
 	/* scheduling */
-	int	p_crit;		 /* Critical depth */
 	u_int	p_estcpu;	 /* Time averaged value of p_cpticks. */
 	int	p_cpticks;	 /* Ticks of cpu time. */
 	fixpt_t	p_pctcpu;	 /* %cpu for this thread during p_swtime */
