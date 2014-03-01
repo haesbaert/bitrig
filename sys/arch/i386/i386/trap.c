@@ -336,7 +336,7 @@ trap(struct trapframe *frame)
 			KERNEL_UNLOCK();
 		}
 		if (want_resched)
-			preempt(NULL);
+			yield(NULL);
 		goto out;
 
 	case T_DNA|T_USER: {

@@ -286,6 +286,7 @@ struct proc {
 	const char *p_wmesg;	 /* Reason for sleep. */
 	u_int	p_swtime;	 /* Time swapped in or out. */
 	u_int	p_slptime;	 /* Time since last blocked. */
+	int	p_preempt;	 /* Should we preempt barney ? */
 	struct	cpu_info * __volatile p_cpu; /* CPU we're running on. */
 
 	struct	rusage p_ru;		/* Statistics */

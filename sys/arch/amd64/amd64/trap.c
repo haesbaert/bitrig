@@ -289,7 +289,7 @@ copyfault:
 		}
 		/* Allow a forced task switch. */
 		if (curcpu()->ci_want_resched)
-			preempt(NULL);
+			yield();
 		goto out;
 
 	case T_BOUND|T_USER:
