@@ -143,7 +143,8 @@ ithread_run(struct intrsource *is)
 		 */
 		setrunqueue(p);
 		resched_proc(p, p->p_priority);
-		curproc->p_preempt = 1;
+		if (p->p_priority < curproc->p_priority)
+			curproc->p_preempt = 1;
 		break;
 	default:
 		SCHED_UNLOCK();
