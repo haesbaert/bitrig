@@ -54,6 +54,8 @@ uint64_t sched_stolen;		/* Times we stole proc from other cpus */
 uint64_t sched_choose;		/* Times we chose a cpu */
 uint64_t sched_wasidle;		/* Times we came out of idle */
 
+int	kernel_preemption;	/* enable or disable kernel preemption */
+
 /*
  * A few notes about cpu_switchto that is implemented in MD code.
  *

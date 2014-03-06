@@ -131,6 +131,7 @@ struct schedstate_percpu {
 
 extern int schedhz;			/* ideally: 16 */
 extern int rrticks_init;		/* ticks per roundrobin() */
+extern int kernel_preemption;		/* enabled or disabled */
 
 struct proc;
 void schedclock(struct proc *);
