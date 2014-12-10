@@ -198,7 +198,7 @@ usb_attach(struct device *parent, struct device *self, void *aux)
 
 	/* XXX we should have our own level */
 	sc->sc_bus->soft = softintr_establish(IPL_SOFTNET,
-	    sc->sc_bus->methods->soft_intr, sc->sc_bus);
+	    sc->sc_bus->methods->soft_intr, sc->sc_bus, "softusb");
 
 
 
